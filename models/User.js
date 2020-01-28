@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const cartSchema = new mongoose.Schema({
   code: { type: String },
+  name: { type: String },
   amount: { type: Number }
 });
 
