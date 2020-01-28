@@ -26,11 +26,28 @@ module.exports.addItemToCart = (req, res) => {
   User.findById(
     userId,
     (err, user) => {
-      console.log('>>>', user);
+
       let item = { code: productCode, amount: amount }
       user.cart.push(item)
       user.save(item)
 
       return res.send(user).status(200)
+    });
+}
+
+module.exports.removeItemFromCart = (req, res) => {
+
+  User.findById(
+    req.params.userId,
+    (err, user) => {
+
+      user.cart.map((item) => {
+  
+        if (item._id == req.params.itemId) {
+          // delete item._id
+          console.log('>>>', item)
+        }
+      })
+      // return res.send(user).status(200)
     });
 }

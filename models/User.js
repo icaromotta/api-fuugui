@@ -1,16 +1,16 @@
 const mongoose = require('mongoose');
 
+const cartSchema = new mongoose.Schema({
+  code: { type: String },
+  amount: { type: Number }
+});
+
 const userSchema = new mongoose.Schema({
 
   name: { type: String },
   email: { type: String },
   wallet: { type: Number, default: '1000' },
-  cart: [
-    {
-      code: { type: String },
-      amount: { type: Number }
-    }
-  ]
+  cart: [cartSchema]
 });
 
 const User = mongoose.model('User', userSchema)
