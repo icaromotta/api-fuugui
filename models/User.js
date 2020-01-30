@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const cartSchema = new mongoose.Schema({
+  // TODO: code -> productCode
   code: { type: String },
   name: { type: String },
   amount: { type: Number }

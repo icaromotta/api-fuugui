@@ -16,7 +16,7 @@ module.exports.register = (req, res) => {
     })
   })
 }
-
+/* Adiciona item ao carrinho*/
 module.exports.addItemToCart = (req, res) => {
 
   const { userId, productName, productCode, amount } = req.body;
@@ -46,9 +46,8 @@ module.exports.addItemToCart = (req, res) => {
         })
       } else {
 
-
+        upSertItemToCart(user, req.body, req, res)
       }
-
     });
 }
 
@@ -69,11 +68,60 @@ module.exports.removeItemFromCart = (req, res) => {
     });
 }
 
-////////////////////////////
-addItem = (item) => {}
+/* Adiciona novo item */
+addItem = (item) => { }
 
-extractItemFromCart = (cart, dataRequest, user, res) => {
+/* Verifica se o item existe no carrinho */
+checkCart = (cart, itemId) => {
 
+  let checkResult = []
+  for (const item of cart) {
+    if (item.code === itemId) {
+      checkResult.push(item)
+    }
+  }
+
+  return checkResult
+}
+
+/* Verifica a disponibilidade do item enviado */
+upSertItemToCart = (user, requisitionData, req, res) => {
+
+  const { productName, productId, amount } = requisitionData
+  let checkedCart = checkCart(user.cart, productId)
+
+  // TODO: Adiciona bloco de código ao metodo addItem
+  if (checkedCart.length > 0) {
+
+    user.cart.splice(user.cart.indexOf(checkedCart[0]), 1)
+    let modifiedItem = { name: productName, code: checkedCart[0].code, amount: amount }
+    user.cart.push(modifiedItem)
+
+    user.save((err, user) => {
+      if (err) {
+
+        res.status(404).json(err)
+      } else {
+        let thisReview = user.cart[user.cart.length - 1];
+        res.status(200).json(thisReview)
+      }
+    })
+  } else {
+
+    console.log('INSERIR')
+
+    // TODO: Adiciona bloco de código ao metodo addItem
+    let item = { name: productName, code: productId, amount: amount }
+    user.cart.push(item)
+
+    user.save((err, user) => {
+      if (err) {
+        res.status(404).json(err)
+      } else {
+        res.status(200).json(user)
+      }
+    })
+  }
 
 
   // for (const item of cart) {
