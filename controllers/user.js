@@ -24,16 +24,26 @@ checkCart = (cart, itemId) => {
   return checkResult
 }
 
+updatesProductPriceByQuantity = (amount, price) => {
+  
+  return price * amount
+}
+
 upSertItemToCart = (user, requisitionData, req, res) => {
 
-  const { productName, productId, amount } = requisitionData
+  const { productName, productId, amount, price } = requisitionData
 
+  let priceByQuantity = updatesProductPriceByQuantity(amount, price)
   let checkedCart = checkCart(user.cart, productId)
-
+  
   if (checkedCart.length > 0) {
-
     user.cart.splice(user.cart.indexOf(checkedCart[0]), 1)
-    let modifiedItem = { name: productName, code: checkedCart[0].code, amount: amount }
+    let modifiedItem = {
+      name: productName, 
+      code: checkedCart[0].code, 
+      amount: amount, 
+      price: priceByQuantity 
+    }
     user.cart.push(modifiedItem)
     // TODO: DRY
     user.save((err, user) => {
@@ -115,13 +125,6 @@ module.exports.removeItemFromCart = (req, res) => {
     req.params.userId,
     (err, user) => {
 
-      user.cart.map((item) => {
-
-        if (item._id == req.params.itemId) {
-          // delete item._id
-          console.log('>>>', item)
-        }
-      })
-      // return res.send(user).status(200)
+      
     });
 }
