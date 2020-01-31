@@ -4,7 +4,8 @@ const cartSchema = new mongoose.Schema({
   // TODO: code -> productCode
   code: { type: String },
   name: { type: String },
-  amount: { type: Number }
+  amount: { type: Number },
+  price: { type: String }
 });
 
 const userSchema = new mongoose.Schema({
