@@ -11,7 +11,6 @@ cloudinary.config({
 
 module.exports.add = (req, res) => {
 
-  
   Product.create(req.body, (err, product) => {
 
     return res.status(200).send(product)
