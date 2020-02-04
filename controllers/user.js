@@ -25,7 +25,7 @@ checkCart = (cart, itemId) => {
 }
 
 updatesProductPriceByQuantity = (amount, price) => {
-  
+
   return price * amount
 }
 
@@ -35,14 +35,14 @@ upSertItemToCart = (user, requisitionData, req, res) => {
 
   let priceByQuantity = updatesProductPriceByQuantity(amount, price)
   let checkedCart = checkCart(user.cart, productId)
-  
+
   if (checkedCart.length > 0) {
     user.cart.splice(user.cart.indexOf(checkedCart[0]), 1)
     let modifiedItem = {
-      name: productName, 
-      code: checkedCart[0].code, 
-      amount: amount, 
-      price: priceByQuantity 
+      name: productName,
+      code: checkedCart[0].code,
+      amount: amount,
+      price: priceByQuantity
     }
     user.cart.push(modifiedItem)
     // TODO: DRY
@@ -85,7 +85,7 @@ module.exports.register = (req, res) => {
     })
   })
 }
-
+// TODO: change functions name: handleCartsItem
 module.exports.addItemToCart = (req, res) => {
 
   const { userId, productName, productCode, amount } = req.body;
@@ -98,11 +98,13 @@ module.exports.addItemToCart = (req, res) => {
       const { productName, productId, amount, price } = req.body
 
       if (!user) {
+
         return res.status(404).send({ message: 'Usuário ñ encontrado!' })
       }
 
+      // TODO: Apply ternary operator
       if (user.cart.length <= 0) {
-
+        // TODO: DRY
         let priceByQuantity = updatesProductPriceByQuantity(amount, price)
         let item = { name: productName, code: productId, amount: amount, price: priceByQuantity }
         user.cart.push(item)
@@ -123,10 +125,17 @@ module.exports.addItemToCart = (req, res) => {
 
 module.exports.removeItemFromCart = (req, res) => {
 
-  User.findById(
-    req.params.userId,
-    (err, user) => {
+  // BLOCO DE CÓDIGO QUE REMOVE ITEM CASO QUANTIDADE SEJA 0
+      // let checkedCart = checkCart(user.cart, productId)
+      // if (amount == 0) {
+      //   user.cart.splice(user.cart.indexOf(checkedCart[0]), 1)
 
-      
-    });
+      //   user.save((err, user) => {
+      //     if (err) {
+      //       res.status(404).send(err)
+      //     } else {
+      //       res.status(200).send(user)
+      //     }
+      //   })
+      // }
 }
