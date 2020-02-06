@@ -24,25 +24,31 @@ checkCart = (cart, itemId) => {
   return checkResult
 }
 
-updatesProductPriceByQuantity = (amount, price) => {
-  
-  return price * amount
+updatesProductPriceByQuantity = (amount, price, operationType, currantValue) => {
+
+  if (operationType == 'subtraction') {
+    return currantValue - price
+  } else {
+    return price * amount
+  }
 }
 
 upSertItemToCart = (user, requisitionData, req, res) => {
 
+  const SUM = 'sum'
+
   const { productName, productId, amount, price } = requisitionData
 
-  let priceByQuantity = updatesProductPriceByQuantity(amount, price)
+  let priceByQuantity = updatesProductPriceByQuantity(amount, price, SUM)
   let checkedCart = checkCart(user.cart, productId)
-  
+
   if (checkedCart.length > 0) {
     user.cart.splice(user.cart.indexOf(checkedCart[0]), 1)
     let modifiedItem = {
-      name: productName, 
-      code: checkedCart[0].code, 
-      amount: amount, 
-      price: priceByQuantity 
+      name: productName,
+      code: checkedCart[0].code,
+      amount: amount,
+      price: priceByQuantity
     }
     user.cart.push(modifiedItem)
     // TODO: DRY
@@ -121,10 +127,56 @@ module.exports.addItemToCart = (req, res) => {
 
 module.exports.removeItemFromCart = (req, res) => {
 
+  const { productName, amount, price, userId, productId } = req.body
+  // TODO: criar enum
+  const SUBTRACTION = 'subtraction'
+
   User.findById(
-    req.params.userId,
+    userId,
     (err, user) => {
 
-      
-    });
+
+      if (!user) {
+        res.status(400).send({
+          ok: false,
+          message: 'Usuário ñ encontrado'
+        })
+      }
+
+      if (amount == 0) {
+
+        let checkedCart = checkCart(user.cart, productId)
+        user.cart.splice(user.cart.indexOf(checkedCart[0]), 1)
+        user.save((err, user) => {
+          if (err) {
+            res.status(404).json(err)
+          } else {
+            res.status(200).json(user)
+          }
+        })
+      } else {
+
+        let checkedCart = checkCart(user.cart, productId)
+        let priceByQuantity = updatesProductPriceByQuantity(amount, price, SUBTRACTION, checkedCart[0].price)
+
+        user.cart.splice(user.cart.indexOf(checkedCart[0]), 1)
+
+        let item = {
+          name: productName,
+          code: checkedCart[0].code,
+          amount: amount,
+          price: priceByQuantity
+        }
+
+        user.cart.push(item)
+
+        user.save((err, user) => {
+          if (err) {
+            res.status(404).json(err)
+          } else {
+            res.status(200).json(user)
+          }
+        })
+      }
+    })
 }
